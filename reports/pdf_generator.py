@@ -1,0 +1,119 @@
+import os
+import datetime
+from typing import Dict, Any, Optional
+
+def generate_pdf_report(check_data: Dict[str, Any], output_pdf_path: str) -> Optional[str]:
+    """
+    Generates a professional PDF clinical / practice report using ReportLab.
+    """
+    try:
+        from reportlab.lib.pagesizes import letter
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib import colors
+        
+        os.makedirs(os.path.dirname(output_pdf_path), exist_ok=True)
+        doc = SimpleDocTemplate(output_pdf_path, pagesize=letter,
+                                rightMargin=36, leftMargin=36, topMargin=36, bottomMargin=36)
+                                
+        styles = getSampleStyleSheet()
+        
+        title_style = ParagraphStyle(
+            'TitleStyle',
+            parent=styles['Heading1'],
+            fontName='Helvetica-Bold',
+            fontSize=22,
+            leading=26,
+            textColor=colors.HexColor('#1E3A8A'),
+            alignment=1
+        )
+        
+        heading_style = ParagraphStyle(
+            'HeadingStyle',
+            parent=styles['Heading2'],
+            fontName='Helvetica-Bold',
+            fontSize=14,
+            leading=18,
+            textColor=colors.HexColor('#2563EB')
+        )
+        
+        body_style = ParagraphStyle(
+            'BodyStyle',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=11,
+            leading=16,
+            textColor=colors.HexColor('#1F2937')
+        )
+        
+        story = []
+        
+        # Header
+        story.append(Paragraph("🗣️ Atypical Speech Assistant", title_style))
+        story.append(Paragraph("Speech Check & Practice Clinical Summary Report", ParagraphStyle('Sub', parent=body_style, alignment=1, textColor=colors.HexColor('#4B5563'))))
+        story.append(Spacer(1, 15))
+        story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#3B82F6'), spaceAfter=15))
+        
+        # Date & Metadata
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        story.append(Paragraph(f"<b>Report Generated:</b> {now_str}", body_style))
+        story.append(Spacer(1, 10))
+        
+        # Key Results Table
+        disorder_type = check_data.get("disorder_type", "Typical").capitalize()
+        severity_pct = check_data.get("severity_percentage", 0.0)
+        severity_cat = check_data.get("severity_category", "typical").capitalize()
+        confidence = check_data.get("confidence", 0.0)
+        latency = check_data.get("latency_seconds", 0.0)
+        
+        table_data = [
+            ["Metric", "Result / Value"],
+            ["Speech Classification", disorder_type],
+            ["Model Confidence", f"{confidence}%"],
+            ["Severity Percentage", f"{severity_pct}%" if disorder_type != "Typical" else "0% (N/A)"],
+            ["Severity Category", severity_cat],
+            ["STT Processing Latency", f"{latency} seconds"]
+        ]
+        
+        t = Table(table_data, colWidths=[200, 320])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#DBEAFE')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1E40AF')),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#93C5FD')),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F8FAFC')])
+        ]))
+        story.append(t)
+        story.append(Spacer(1, 15))
+        
+        # Transcript Section
+        story.append(Paragraph("Speech Recognition Transcript", heading_style))
+        story.append(Spacer(1, 5))
+        transcript_text = check_data.get("transcript", "(No transcript available)")
+        story.append(Paragraph(f"<i>\"{transcript_text}\"</i>", body_style))
+        story.append(Spacer(1, 15))
+        
+        # Recommendations
+        story.append(Paragraph("Practice & Progress Recommendations", heading_style))
+        story.append(Spacer(1, 5))
+        rec_html = """
+        • Perform 10-15 minutes of daily vocal warmup exercises in the Practice tab.<br/>
+        • Focus on pacing and clear articulation of vowel sounds.<br/>
+        • Track your weekly severity trend in the Progress tab to monitor speech muscle improvement over time.
+        """
+        story.append(Paragraph(rec_html, body_style))
+        story.append(Spacer(1, 20))
+        
+        # Medical Disclaimer
+        story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor('#CBD5E1'), spaceAfter=10))
+        disclaimer = "<b>Disclaimer:</b> This report is generated by AI speech processing algorithms for self-practice and accessibility support. It does not constitute a formal medical diagnosis. Please consult a licensed Speech-Language Pathologist for clinical evaluation."
+        story.append(Paragraph(disclaimer, ParagraphStyle('Disc', parent=body_style, fontSize=8, leading=11, textColor=colors.HexColor('#64748B'))))
+        
+        doc.build(story)
+        return output_pdf_path
+    except Exception as e:
+        print(f"Failed to generate PDF: {e}")
+        return None

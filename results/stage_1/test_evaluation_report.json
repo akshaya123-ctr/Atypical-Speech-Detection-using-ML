@@ -1,0 +1,42 @@
+{
+    "timestamp": "2026-09-27 14:46:49",
+    "total_samples": 2991,
+    "total_speakers": 264,
+    "classes": [
+        "dysarthria",
+        "stammer",
+        "typical"
+    ],
+    "algorithms": {
+        "SVM": {
+            "name": "SVM",
+            "holdout_accuracy": 0.8112359550561797,
+            "holdout_f1": 0.5712962962962963,
+            "holdout_precision": 0.6146397162007862,
+            "holdout_recall": 0.5442276027748535,
+            "roc_auc": null,
+            "latency_ms_per_sample": 0.395,
+            "noise_robustness_pct": 83.4
+        },
+        "Random_Forest": {
+            "name": "Random Forest",
+            "holdout_accuracy": 0.797752808988764,
+            "holdout_f1": 0.565726394775238,
+            "holdout_precision": 0.6178529325081049,
+            "holdout_recall": 0.5363524711852512,
+            "roc_auc": null,
+            "latency_ms_per_sample": 28.015,
+            "noise_robustness_pct": 79.3
+        },
+        "MLP": {
+            "name": "MLP",
+            "holdout_accuracy": 0.8224719101123595,
+            "holdout_f1": 0.5771654072961278,
+            "holdout_precision": 0.6136151065497105,
+            "holdout_recall": 0.5508138310794396,
+            "roc_auc": null,
+            "latency_ms_per_sample": 0.364,
+            "noise_robustness_pct": 84.9
+        }
+    }
+}

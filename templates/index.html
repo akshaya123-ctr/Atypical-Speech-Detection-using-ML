@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atypical Speech Detection & Accessibility Platform</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=2.3">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+</head>
+<body>
+
+<!-- ====================================================================
+     TOP GLOBAL NAVIGATION BAR WITH 3-BAR HAMBURGER MENU
+     ==================================================================== -->
+<nav class="top-navbar">
+    <div class="nav-left">
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle Portal Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+        <div class="nav-brand">
+            <span class="brand-icon">🗣️</span>
+            <span class="brand-name">Atypical Speech <span class="brand-highlight">Platform</span></span>
+        </div>
+    </div>
+
+    <div class="nav-center">
+        <div class="current-view-pill" id="currentViewIndicator">
+            <span id="navViewIcon">🎙️</span> <span id="navViewName">Diagnostic Predictor</span>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <!-- Guest Auth Pill -->
+        <button class="auth-pill-btn" id="guestAuthBtn" onclick="openSidebarAuth('login')">
+            <span>🔒</span> Sign In / Register
+        </button>
+        <!-- Logged In User Pill -->
+        <div class="user-pill-btn" id="userProfileBtn" style="display:none;" onclick="toggleSidebar()">
+            <span class="avatar-dot"></span>
+            <span class="user-pill-avatar">👤</span>
+            <span class="user-pill-name" id="topNavUserName">Alex Taylor</span>
+            <span class="user-pill-badge" id="topNavConditionBadge">Patient</span>
+        </div>
+    </div>
+</nav>
+
+<!-- ====================================================================
+     SLIDE-OUT SIDE DRAWER (3-BAR DROPDOWN PANEL)
+     ==================================================================== -->
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeSidebar()"></div>
+
+<aside class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+        <div class="drawer-brand">
+            <span style="font-size:22px;">🗣️</span>
+            <div>
+                <div style="font-size:15px; font-weight:800; color:#FFFFFF;">Speech Accessibility Suite</div>
+                <div style="font-size:11px; color:var(--text-muted);">Atypical Detection & Therapy</div>
+            </div>
+        </div>
+        <button class="drawer-close-btn" onclick="closeSidebar()">&times;</button>
+    </div>
+
+    <!-- DRAWER STATE 1: GUEST / AUTHENTICATION (LOGIN & REGISTER) -->
+    <div class="drawer-auth-box" id="drawerAuthSection">
+        <div class="auth-tabs-row">
+            <button class="auth-tab active" id="tabBtnLogin" onclick="switchAuthTab('login')">Sign In</button>
+            <button class="auth-tab" id="tabBtnRegister" onclick="switchAuthTab('register')">Create Account</button>
+        </div>
+
+        <!-- 1. LOGIN FORM -->
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="auth-field-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" placeholder="name@example.com" required class="auth-input">
+            </div>
+            <div class="auth-field-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" required class="auth-input">
+            </div>
+            <button type="submit" class="auth-btn-primary" id="loginSubmitBtn">Sign In to Portal</button>
+        </form>
+
+        <!-- 2. REGISTER FORM -->
+        <form id="registerForm" style="display:none;" onsubmit="handleRegisterSubmit(event)">
+            <div class="auth-field-group">
+                <label>Full Name</label>
+                <input type="text" id="regName" placeholder="Your Full Name" required class="auth-input">
+            </div>
+            <div class="auth-field-group">
+                <label>Email Address</label>
+                <input type="email" id="regEmail" placeholder="yourname@example.com" required class="auth-input">
+            </div>
+            <div class="auth-field-group">
+                <label>Password</label>
+                <input type="password" id="regPassword" placeholder="Choose a password" required class="auth-input">
+            </div>
+            <div class="auth-field-group">
+                <label>Role / Speech Condition</label>
+                <select id="regCondition" class="auth-input">
+                    <option value="Dysarthria (Mild)">Dysarthria (Mild Patient)</option>
+                    <option value="Dysarthria (Moderate-Severe)">Dysarthria (Moderate-Severe Patient)</option>
+                    <option value="Stammer / Stuttering">Stammer / Stuttering (Fluency Patient)</option>
+                    <option value="Speech Therapy Patient">General Speech Therapy Patient</option>
+                    <option value="Speech-Language Pathologist (SLP)">🩺 Speech-Language Pathologist (SLP Clinician)</option>
+                </select>
+            </div>
+            <div class="auth-grid-2">
+                <div class="auth-field-group">
+                    <label>Age</label>
+                    <input type="number" id="regAge" placeholder="e.g. 28" class="auth-input">
+                </div>
+                <div class="auth-field-group">
+                    <label>WhatsApp / Mobile</label>
+                    <div style="display:flex; gap:6px;">
+                        <select id="regCountryCode" class="auth-input" style="width:95px; flex:none; padding:10px 4px; font-size:12px;">
+                            <option value="+91" selected>🇮🇳 +91</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+971">🇦🇪 +971</option>
+                            <option value="">Other</option>
+                        </select>
+                        <input type="tel" id="regPhone" placeholder="Mobile Number" class="auth-input" style="flex:1;">
+                    </div>
+                </div>
+            </div>
+            <div class="auth-field-group">
+                <label>Primary Communication Goal</label>
+                <input type="text" id="regGoal" placeholder="e.g. Clear speech on calls, reduce stutter" class="auth-input">
+            </div>
+            <button type="submit" class="auth-btn-primary" id="registerSubmitBtn">Create Account & Unlock Advanced Suite</button>
+        </form>
+    </div>
+
+    <!-- DRAWER STATE 2: LOGGED IN USER PROFILE & NAVIGATION MENU -->
+    <div class="drawer-profile-box" id="drawerProfileSection" style="display:none;">
+        <div class="user-card-compact">
+            <div class="user-card-avatar" id="drawerAvatar">👤</div>
+            <div style="flex:1;">
+                <div class="user-card-name" id="drawerUserName">Alex Taylor</div>
+                <div class="user-card-email" id="drawerUserEmail">patient@speech.ai</div>
+                <div class="user-card-badge" id="drawerUserCondition">Dysarthria (Mild-Moderate)</div>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()" title="Log Out">🚪</button>
+        </div>
+
+        <div class="drawer-nav-section-title" id="drawerNavHeaderTitle">ACCESSIBILITY SUITE NAVIGATION</div>
+
+        <!-- Dynamic Menu List (Switches based on Patient vs SLP) -->
+        <ul class="drawer-menu-list" id="drawerMenuList">
+            <!-- Populated via renderDrawerMenu() based on whether currentUser.is_slp is true -->
+        </ul>
+
+        <div class="drawer-footer-actions">
+            <button class="drawer-logout-btn" onclick="handleLogout()">
+                <span>🚪</span> Sign Out of Portal
+            </button>
+        </div>
+    </div>
+</aside>
+
+<!-- ====================================================================
+     MAIN CONTENT WRAPPER
+     ==================================================================== -->
+<main class="container">
+
+    <!-- ================================================================
+         VIEW 1: CORE SPEECH DIAGNOSTIC PREDICTOR (ORIGINAL VIEW)
+         ================================================================ -->
+    <div id="viewPredictor" class="app-view active-view">
+        <header class="header-section">
+            <div class="tag-pill">🎙️ Speech Diagnostics & Classification</div>
+            <h1 class="main-title">Atypical Speech <span class="main-title-accent">Detection System</span></h1>
+            <p class="subtitle">
+                Select a machine learning model, enter patient speech data, and get instant predictions across <b>Typical</b>, <b>Dysarthria</b>, and <b>Stammer</b> with detailed performance metrics.
+            </p>
+
+            <div class="stepper-nav">
+                <div class="step-node active" id="stepNode1">
+                    <span class="step-circle current" id="stepCircle1">1</span> Select Model
+                </div>
+                <div class="step-line"></div>
+                <div class="step-node active" id="stepNode2">
+                    <span class="step-circle current" id="stepCircle2">2</span> Enter Data
+                </div>
+                <div class="step-line"></div>
+                <div class="step-node" id="stepNode3">
+                    <span class="step-circle" id="stepCircle3">3</span> View Results
+                </div>
+            </div>
+        </header>
+
+        <!-- CARD 1: CHOOSE A MODEL -->
+        <section class="card-container">
+            <div class="card-header-row">
+                <div class="card-icon-bubble">🧠</div>
+                <div>
+                    <h2 class="card-title-text">Choose a Model</h2>
+                    <p class="card-desc-text">Pick one ML algorithm to run your prediction</p>
+                </div>
+            </div>
+
+            <div class="model-grid">
+                <!-- Model 1: SVM -->
+                <div class="model-card selected" data-model="SVM" onclick="selectModel('SVM')">
+                    <div class="radio-check"><div class="radio-check-inner"></div></div>
+                    <div class="model-icon">📐</div>
+                    <div class="model-name">SVM</div>
+                    <div class="model-badge badge-kernel">KERNEL (RBF) • 64.4%</div>
+                </div>
+
+                <!-- Model 2: Random Forest -->
+                <div class="model-card" data-model="Random Forest" onclick="selectModel('Random Forest')">
+                    <div class="radio-check"><div class="radio-check-inner"></div></div>
+                    <div class="model-icon">🌲</div>
+                    <div class="model-name">Random Forest</div>
+                    <div class="model-badge badge-ensemble">ENSEMBLE • 63.9%</div>
+                </div>
+
+                <!-- Model 3: MLP (ANN) -->
+                <div class="model-card" data-model="MLP" onclick="selectModel('MLP')">
+                    <div class="radio-check"><div class="radio-check-inner"></div></div>
+                    <div class="model-icon">🧠</div>
+                    <div class="model-name">ANN (MLP)</div>
+                    <div class="model-badge badge-neural">NEURAL NET • 63.5%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CARD 2: PATIENT SPEECH & CLINICAL INPUT -->
+        <section class="card-container">
+            <div class="card-header-row">
+                <div class="card-icon-bubble">🎙️</div>
+                <div>
+                    <h2 class="card-title-text">Patient Speech & Clinical Input</h2>
+                    <p class="card-desc-text">Record live patient voice via microphone or upload clinical speech audio for real-time evaluation</p>
+                </div>
+            </div>
+
+            <div class="input-section-title">🎙️ SPEECH INPUT & ACOUSTIC CAPTURE</div>
+            <div class="audio-controls-box">
+                <div class="record-btn-container">
+                    <button type="button" class="btn-record" id="recordBtn" onclick="toggleRecording()">
+                        <span id="recordDot">🔴</span> <span id="recordBtnText">Record Speech (Microphone)</span>
+                    </button>
+                    <div class="rec-timer-pill" id="recordTimer">00:00</div>
+                    <span id="recordingStatus" class="rec-status-tag">Ready to record</span>
+                </div>
+
+                <div class="file-dropzone" id="fileDropzone" onclick="document.getElementById('audioFileInput').click()">
+                    <input type="file" id="audioFileInput" accept=".wav,.mp3,.flac,.m4a,.ogg,.webm" style="display:none;" onchange="handleFileSelected(event)">
+                    <div style="font-size:26px; margin-bottom:6px;">📤</div>
+                    <div style="font-size:15px; font-weight:700; color:#FFFFFF;" id="fileNameDisplay">Upload your audio</div>
+                    <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Click to browse or drop audio file (.wav, .mp3, .flac, .ogg, .m4a)</div>
+                </div>
+
+                <div id="audioPlaybackContainer" style="display:none; margin-top:16px;">
+                    <div style="font-size:11px; font-weight:700; color:var(--gold); text-transform:uppercase; margin-bottom:6px;">▶️ Audio Preview:</div>
+                    <audio id="audioPlayer" controls style="width:100%; height:42px; border-radius:8px; outline:none; background:#11141A;"></audio>
+                </div>
+            </div>
+
+            <!-- Action Bar: Reset & Predict -->
+            <div class="action-bar">
+                <button type="button" class="btn-secondary" onclick="resetForm()">🔄 Reset</button>
+                <button type="button" class="btn-primary" id="predictBtn" onclick="runPrediction()">⚡ Analyse & Predict</button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-box" id="loadingBox">
+                <div class="spinner"></div>
+                <div style="font-size:14px; font-weight:700; color:var(--gold);">Analysing Speech & Extracting 63 Acoustic Features...</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Running Faster-Whisper transcription & selected ML inference engine</div>
+            </div>
+        </section>
+
+        <!-- RESULTS SECTION -->
+        <div class="results-wrapper" id="resultsWrapper">
+            <!-- 1. Prediction Hero Box -->
+            <section class="result-hero-box" id="heroBox">
+                <div class="result-pill-badge res-typical" id="resultPillTag">• TYPICAL SPEECH (CONTROL)</div>
+                <div class="result-big-title" id="resultBigTitle" style="color:#34D399;">TYPICAL</div>
+                <div class="result-desc-text" id="resultDescText">Prediction output: Typical (No Speech Disorder Detected)</div>
+                <div class="meta-tags-row">
+                    <div class="meta-tag">🎯 Confidence: <b id="resConfidence">88.5%</b></div>
+                    <div class="meta-tag">⚡ Model: <b id="resModelName">SVM</b></div>
+                </div>
+            </section>
+
+            <!-- 2. Prediction Details & Transcribed Speech -->
+            <section class="card-container">
+                <div class="card-header-row">
+                    <div class="card-icon-bubble">📋</div>
+                    <div>
+                        <h2 class="card-title-text">Prediction Details & Transcribed Speech</h2>
+                        <p class="card-desc-text">Automatic speech recognition (Faster-Whisper) & extracted acoustic parameters</p>
+                    </div>
+                </div>
+
+                <div style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">
+                    💬 Transcribed Speech:
+                </div>
+                <div class="transcript-card-box" id="transcriptDisplay">
+                    "Hi, how are you?"
+                </div>
+
+                <!-- 2x4 Metric Grid -->
+                <div class="params-grid-4">
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">PREDICTED FIELD</div>
+                        <div class="param-tile-value" id="valField">Typical</div>
+                    </div>
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">SPEAKING RATE</div>
+                        <div class="param-tile-value" id="valWps">3.6 WPS</div>
+                    </div>
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">STT CONFIDENCE</div>
+                        <div class="param-tile-value" id="valSttConf">88.3%</div>
+                    </div>
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">SEVERITY RATING</div>
+                        <div class="param-tile-value" id="valSeverity">0% (Typical)</div>
+                    </div>
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">JITTER (STABILITY)</div>
+                        <div class="param-tile-value" id="valJitter">0.15%</div>
+                    </div>
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">SHIMMER (AMPLITUDE)</div>
+                        <div class="param-tile-value" id="valShimmer">0.16%</div>
+                    </div>
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">PITCH (F0 MEAN)</div>
+                        <div class="param-tile-value" id="valPitch">277.9 Hz</div>
+                    </div>
+                    <div class="param-tile-box">
+                        <div class="param-tile-label">RMS ENERGY</div>
+                        <div class="param-tile-value" id="valRms">0.15</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Model Performance -->
+            <section class="card-container">
+                <div class="card-header-row">
+                    <div class="card-icon-bubble">📊</div>
+                    <div>
+                        <h2 class="card-title-text" id="perfCardTitle">Model Performance</h2>
+                        <p class="card-desc-text">Evaluated via 5-Fold Speaker-Disjoint Cross Validation (0 Leakage across 264 Speakers)</p>
+                    </div>
+                </div>
+
+                <!-- 4-KPI Metric Cards -->
+                <div class="kpi-row-4">
+                    <div class="kpi-metric-tile under-yellow">
+                        <div class="kpi-metric-icon">🎯</div>
+                        <div class="kpi-metric-name">ACCURACY</div>
+                        <div class="kpi-metric-num" id="kpiAccuracy">64.41%</div>
+                    </div>
+                    <div class="kpi-metric-tile under-green">
+                        <div class="kpi-metric-icon">✅</div>
+                        <div class="kpi-metric-name">PRECISION</div>
+                        <div class="kpi-metric-num" id="kpiPrecision">65.42%</div>
+                    </div>
+                    <div class="kpi-metric-tile under-blue">
+                        <div class="kpi-metric-icon">🔍</div>
+                        <div class="kpi-metric-name">RECALL</div>
+                        <div class="kpi-metric-num" id="kpiRecall">65.13%</div>
+                    </div>
+                    <div class="kpi-metric-tile under-purple">
+                        <div class="kpi-metric-icon">⚖️</div>
+                        <div class="kpi-metric-name">F1 SCORE</div>
+                        <div class="kpi-metric-num" id="kpiF1">63.52%</div>
+                    </div>
+                </div>
+
+                <!-- 3 Fields Probabilities Meter -->
+                <div class="probs-bar-grid">
+                    <div class="prob-item">
+                        <label><span>Typical Speech</span> <b id="probTyp">70.9%</b></label>
+                        <div class="progress-track"><div class="progress-fill fill-typical" id="barTyp" style="width:70.9%;"></div></div>
+                    </div>
+                    <div class="prob-item">
+                        <label><span>Dysarthria</span> <b id="probDys">10.7%</b></label>
+                        <div class="progress-track"><div class="progress-fill fill-dysarthria" id="barDys" style="width:10.7%;"></div></div>
+                    </div>
+                    <div class="prob-item">
+                        <label><span>Stammer / Stutter</span> <b id="probStm">18.5%</b></label>
+                        <div class="progress-track"><div class="progress-fill fill-stammer" id="barStm" style="width:18.5%;"></div></div>
+                    </div>
+                </div>
+
+                <!-- Algorithm Comparison View Toggle -->
+                <div style="margin-top:24px; text-align:center;">
+                    <button type="button" class="btn-secondary" onclick="toggleComparisonTable()">
+                        📊 Toggle 3-Algorithm Comparison Table (SVM vs Random Forest vs MLP)
+                    </button>
+                </div>
+
+                <div id="comparisonTableWrapper" style="display:none; margin-top:16px;">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>CV Accuracy</th>
+                                <th>Macro F1</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>Inference Latency</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         VIEW 2: CHAT WITH FRIENDS & FAMILY (VOICE TRANSLATED TO TEXT)
+         ================================================================ -->
+    <div id="viewChat" class="app-view">
+        <header class="header-section">
+            <div class="tag-pill" style="border-color:rgba(16, 185, 129, 0.4); color:#10B981; background:rgba(16, 185, 129, 0.1);">
+                💬 Assistive Verbal Communication
+            </div>
+            <h1 class="main-title">Chat with <span class="main-title-accent" style="background: linear-gradient(135deg, #A7F3D0 0%, #10B981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Friends & Family</span></h1>
+            <p class="subtitle">
+                Speak naturally with dysarthria or stammering. Faster-Whisper transcribes your voice into clean text that you can instantly copy or send over WhatsApp.
+            </p>
+        </header>
+
+        <section class="card-container">
+            <div class="card-header-row">
+                <div class="card-icon-bubble" style="background:rgba(16, 185, 129, 0.15); border-color:rgba(16, 185, 129, 0.3);">🎙️</div>
+                <div>
+                    <h2 class="card-title-text">Speak to Transcribe</h2>
+                    <p class="card-desc-text">Tap record, speak your message, and let AI convert it to text for effortless communication</p>
+                </div>
+            </div>
+
+            <div class="audio-controls-box">
+                <div class="record-btn-container" style="justify-content:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
+                    <button type="button" class="btn-record" id="chatVoiceRecordBtn" onclick="toggleChatVoiceRecord()" style="background:#059669; border-color:#10B981;">
+                        <span id="chatRecordDot">🔴</span> <span id="chatRecordBtnText">Record Voice Message</span>
+                    </button>
+                    <div class="rec-timer-pill" id="chatRecordTimer">00:00</div>
+
+                    <!-- Audio File Upload -->
+                    <input type="file" id="chatAudioFileInput" accept="audio/*" style="display:none;" onchange="handleChatAudioUpload(event)">
+                    <button type="button" class="btn-sample-action" onclick="document.getElementById('chatAudioFileInput').click()" title="Upload a recorded audio file">
+                        📁 Upload Audio File
+                    </button>
+                </div>
+
+
+                <div style="text-align:center; font-size:12px; color:var(--text-muted);" id="chatVoiceStatus">
+                    Click record or upload audio to transcribe
+                </div>
+            </div>
+
+            <!-- Transcribed Message Card -->
+            <div style="margin-top:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">
+                        📝 Transcribed Message Output (Editable):
+                    </span>
+                    <span id="copyFeedbackTag" style="font-size:12px; font-weight:700; color:#10B981; display:none;">
+                        ✅ Copied to clipboard!
+                    </span>
+                </div>
+
+                <div class="chat-transcript-area" id="chatTranscriptBox" contenteditable="true" spellcheck="false" title="Click to edit transcribed text or type directly">
+                    <span style="color:var(--text-muted); font-style:italic;">Your voice message will appear here in real time... (or click to type manually)</span>
+                </div>
+
+                <!-- Instant Action Buttons -->
+                <div class="chat-actions-row">
+                    <button type="button" class="chat-action-btn btn-copy" onclick="copyChatTranscript()">
+                        📋 Copy Message
+                    </button>
+                    <button type="button" class="chat-action-btn btn-whatsapp" onclick="shareOnWhatsApp()">
+                        <span>🟢</span> Share via WhatsApp
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Contacts Section -->
+            <div style="margin-top:28px; padding-top:20px; border-top:1px solid var(--border-color);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">
+                        👥 Saved WhatsApp Contacts:
+                    </div>
+                    <button type="button" class="btn-add-contact-pill" onclick="openAddContactModal()">
+                        ➕ Add New Contact
+                    </button>
+                </div>
+
+                <div class="contacts-pills-row" id="contactsPillsContainer">
+                    <!-- Populated dynamically via JS from /api/contacts -->
+                    <div style="color:var(--text-muted); font-size:12px;">Loading contacts...</div>
+                </div>
+
+                <!-- Custom Direct WhatsApp Input with Country Code -->
+                <div style="margin-top:16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <select id="directCountryCode" class="auth-input" style="width:140px; flex:none;">
+                        <option value="+91" selected>🇮🇳 +91 (India)</option>
+                        <option value="+1">🇺🇸 +1 (US/CA)</option>
+                        <option value="+44">🇬🇧 +44 (UK)</option>
+                        <option value="+61">🇦🇺 +61 (Australia)</option>
+                        <option value="+971">🇦🇪 +971 (UAE)</option>
+                        <option value="+65">🇸🇬 +65 (Singapore)</option>
+                        <option value="+49">🇩🇪 +49 (Germany)</option>
+                        <option value="+33">🇫🇷 +33 (France)</option>
+                        <option value="">Custom</option>
+                    </select>
+                    <input type="tel" id="directWhatsAppNumber" placeholder="Mobile Number (e.g. 6238629917)" class="auth-input" style="flex:1; min-width:200px;">
+                    <button type="button" class="chat-action-btn btn-whatsapp" style="flex:none; padding:10px 20px;" onclick="sendToCustomWhatsApp()">
+                        <span>🟢</span> Send Direct
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================
+         VIEW 3: AI CHATBOT SPEECH ASSISTANT
+         ================================================================ -->
+    <div id="viewAichat" class="app-view">
+        <header class="header-section">
+            <div class="tag-pill">🤖 AI Speech Companion</div>
+            <h1 class="main-title">AI Speech <span class="main-title-accent">Assistant</span></h1>
+            <p class="subtitle">
+                Ask questions about dysarthria, stuttering coping techniques, tongue exercises, speech therapy guidance, and app features.
+            </p>
+        </header>
+
+        <section class="card-container chatbot-container">
+            <!-- Suggested Prompts Row -->
+            <div class="suggested-chips-container">
+                <span style="font-size:11px; font-weight:800; color:var(--gold); text-transform:uppercase;">Suggested:</span>
+                <button class="prompt-chip" onclick="sendAiChatMessage('What daily exercises help improve dysarthria speech clarity?')">
+                    Vocal exercises for dysarthria
+                </button>
+                <button class="prompt-chip" onclick="sendAiChatMessage('How can I manage stuttering blocks during stressful conversations?')">
+                    Overcoming stutter blocks
+                </button>
+                <button class="prompt-chip" onclick="sendAiChatMessage('Explain how my speech severity score is calculated.')">
+                    How severity % works
+                </button>
+            </div>
+
+            <!-- Messages Window -->
+            <div class="chat-messages-window" id="chatMessagesWindow">
+                <!-- Welcome Bot Message -->
+                <div class="chat-msg bot-msg">
+                    <div class="msg-avatar">🤖</div>
+                    <div class="msg-bubble">
+                        Hello! I am your <b>AI Speech Assistant</b>. I'm here to support you with vocal exercises, communication advice, speech disorder insights, and daily confidence tips. How can I help you today?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Input Area -->
+            <form class="chat-input-bar" onsubmit="handleChatSubmit(event)">
+                <input type="text" id="aiChatInput" placeholder="Ask anything about speech therapy, exercises, coping strategies..." class="chat-input-box" required>
+                <button type="button" class="btn-chat-mic" id="aiVoiceBtn" onclick="toggleAiVoiceRecord()" title="Speak to AI with Stammer & Atypical Voice Recognition">
+                    <span id="aiVoiceIcon">🎙️</span>
+                </button>
+                <button type="submit" class="btn-chat-send" id="chatSendBtn">Send ➔</button>
+            </form>
+
+            <!-- Voice Recording Status Indicator -->
+            <div id="aiVoiceStatusRow" style="display:none; align-items:center; justify-content:space-between; margin-top:10px; padding:10px 16px; background:rgba(245,158,11,0.12); border:1px solid var(--gold-border); border-radius:10px; font-size:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="aiVoiceDot" style="color:#EF4444; font-size:14px;">🔴</span>
+                    <span id="aiVoiceStatusText" style="color:#FFFFFF; font-weight:600;">Listening to your voice... Speak naturally.</span>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <span id="aiVoiceTimer" style="font-family:'JetBrains Mono', monospace; font-weight:800; color:var(--gold);">00:00</span>
+                    <button type="button" onclick="stopAiVoiceRecord()" style="background:#EF4444; color:#fff; border:none; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">
+                        ⏹️ Stop & Ask AI
+                    </button>
+                </div>
+            </div>
+
+            <div style="font-size:11px; color:var(--text-muted); text-align:center; margin-top:16px;">
+                ⚠️ <i>AI guidance is educational and does not replace medical diagnosis from a licensed Speech-Language Pathologist.</i>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================
+         VIEW 4: DAILY PRACTICE STUDIO
+         ================================================================ -->
+    <div id="viewPractice" class="app-view">
+        <header class="header-section">
+            <div class="tag-pill" style="border-color:rgba(234, 88, 12, 0.4); color:#F97316; background:rgba(234, 88, 12, 0.1);">
+                🏋️ Daily Speech Coaching
+            </div>
+            <h1 class="main-title">Daily Practice <span class="main-title-accent" style="background: linear-gradient(135deg, #FED7AA 0%, #F97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Studio</span></h1>
+            <p class="subtitle">
+                Strengthen speech muscles and fluency with non-judgmental vocal exercises and real-time fuzzy matching feedback.
+            </p>
+        </header>
+
+        <section class="card-container">
+            <div class="card-header-row">
+                <div class="card-icon-bubble">🎯</div>
+                <div>
+                    <h2 class="card-title-text">Select Exercise Level & Target Phrase</h2>
+                    <p class="card-desc-text">Read the phrase aloud clearly. We compare your pronunciation using sequence matching algorithms.</p>
+                </div>
+            </div>
+
+            <!-- Difficulty Selector -->
+            <div class="practice-diff-row">
+                <button class="diff-btn active" data-diff="Easy" onclick="changePracticeDifficulty('Easy')">Easy (Single Words)</button>
+                <button class="diff-btn" data-diff="Medium" onclick="changePracticeDifficulty('Medium')">Medium (Phrases)</button>
+                <button class="diff-btn" data-diff="Hard" onclick="changePracticeDifficulty('Hard')">Hard (Full Sentences)</button>
+            </div>
+
+            <!-- Target Phrase Card -->
+            <div class="target-phrase-card">
+                <div style="font-size:11px; font-weight:800; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">
+                    🎯 Target Phrase to Pronounce:
+                </div>
+                <div class="target-phrase-text" id="targetPhraseDisplay">
+                    "Today is a wonderful day"
+                </div>
+                <button type="button" class="btn-refresh-phrase" onclick="fetchNewPracticePhrase()">
+                    🔄 Try Another Phrase
+                </button>
+            </div>
+
+            <!-- Practice Recording Controls -->
+            <div class="audio-controls-box" style="margin-top:20px;">
+                <div class="record-btn-container" style="justify-content:center; gap:12px; flex-wrap:wrap;">
+                    <button type="button" class="btn-record" id="practiceRecordBtn" onclick="togglePracticeRecord()">
+                        <span id="practiceRecordDot">🔴</span> <span id="practiceRecordBtnText">Record Attempt</span>
+                    </button>
+                    <div class="rec-timer-pill" id="practiceTimer">00:00</div>
+
+                    <!-- Audio File Upload Option for Practice -->
+                    <input type="file" id="practiceAudioFileInput" accept="audio/*,.wav,.mp3,.flac,.m4a,.ogg" style="display:none;" onchange="handlePracticeAudioUpload(event)">
+                    <button type="button" class="btn-sample-action" onclick="document.getElementById('practiceAudioFileInput').click()" title="Upload a recorded audio practice attempt">
+                        📁 Upload Audio File
+                    </button>
+                </div>
+
+
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;" id="practiceStatus">
+                    Click record or upload audio to evaluate your attempt
+                </div>
+            </div>
+
+            <!-- Practice Results Box (Fuzzy Feedback) -->
+            <div class="practice-results-box" id="practiceResultsBox" style="display:none; margin-top:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <span style="font-size:13px; font-weight:800; color:#FFFFFF;">Exercise Feedback:</span>
+                    <span class="match-score-badge" id="practiceMatchScore">92% Match</span>
+                </div>
+
+                <div class="practice-feedback-msg" id="practiceFeedbackMsg">
+                    Great job! Your pronunciation is clear and steady.
+                </div>
+
+                <div style="margin-top:16px;">
+                    <div style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">
+                        Word-by-Word Pronunciation Review:
+                    </div>
+                    <div class="word-diff-container" id="practiceWordDiffContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================
+         VIEW 5: REAL THERAPIST SESSIONS (SLP DIRECTORY & BOOKING)
+         ================================================================ -->
+    <div id="viewTherapy" class="app-view">
+        <header class="header-section">
+            <div class="tag-pill" style="border-color:rgba(6, 182, 212, 0.4); color:#06B6D4; background:rgba(6, 182, 212, 0.1);">
+                🩺 Clinical Tele-Health Network
+            </div>
+            <h1 class="main-title">Certified <span class="main-title-accent" style="background: linear-gradient(135deg, #A5F3FC 0%, #06B6D4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Speech Therapists</span></h1>
+            <p class="subtitle">
+                Connect with licensed Speech-Language Pathologists (SLPs) specializing in motor speech disorders, dysarthria rehabilitation, and stuttering fluency therapy.
+            </p>
+        </header>
+
+        <!-- Therapist Cards Grid -->
+        <div class="therapist-grid" id="therapistGrid">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- My Upcoming Consultations Card -->
+        <section class="card-container" style="margin-top:32px;">
+            <div class="card-header-row">
+                <div class="card-icon-bubble">📅</div>
+                <div>
+                    <h2 class="card-title-text">My Scheduled Consultations</h2>
+                    <p class="card-desc-text">Upcoming 1-on-1 tele-therapy sessions and diagnostic reviews</p>
+                </div>
+            </div>
+
+            <div id="myConsultationsList">
+                <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">
+                    Loading your scheduled therapy sessions...
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================
+         VIEW 6: PROGRESS & ANALYTICS
+         ================================================================ -->
+    <div id="viewProgress" class="app-view">
+        <header class="header-section">
+            <div class="tag-pill" style="border-color:rgba(168, 85, 247, 0.4); color:#A855F7; background:rgba(168, 85, 247, 0.1);">
+                📈 Clinical Rehabilitation Journey
+            </div>
+            <h1 class="main-title">My Progress & <span class="main-title-accent" style="background: linear-gradient(135deg, #E9D5FF 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Analytics</span></h1>
+            <p class="subtitle">
+                Track vocal clarity improvements, exercise completion rates, and historical speech diagnostic results over time.
+            </p>
+        </header>
+
+        <!-- Overview KPIs -->
+        <div class="kpi-row-4">
+            <div class="kpi-metric-tile under-yellow">
+                <div class="kpi-metric-icon">🎙️</div>
+                <div class="kpi-metric-name">SPEECH CHECKS</div>
+                <div class="kpi-metric-num" id="statSpeechChecks">0</div>
+            </div>
+            <div class="kpi-metric-tile under-green">
+                <div class="kpi-metric-icon">🏋️</div>
+                <div class="kpi-metric-name">PRACTICE SESSIONS</div>
+                <div class="kpi-metric-num" id="statPracticeSessions">0</div>
+            </div>
+            <div class="kpi-metric-tile under-blue">
+                <div class="kpi-metric-icon">🎯</div>
+                <div class="kpi-metric-name">AVG CLARITY SCORE</div>
+                <div class="kpi-metric-num" id="statAvgClarity">--</div>
+            </div>
+            <div class="kpi-metric-tile under-purple">
+                <div class="kpi-metric-icon">🩺</div>
+                <div class="kpi-metric-name">THERAPIST SESSIONS</div>
+                <div class="kpi-metric-num" id="statConsultations">0</div>
+            </div>
+        </div>
+
+        <!-- Recent Diagnostic Checks Table -->
+        <section class="card-container" style="margin-top:24px;">
+            <div class="card-header-row">
+                <div class="card-icon-bubble">📋</div>
+                <div>
+                    <h2 class="card-title-text">Recent Speech Diagnostic Checks</h2>
+                    <p class="card-desc-text">Log of patient speech evaluations, confidence scores, and severity ratings</p>
+                </div>
+            </div>
+
+            <div class="table-scroll-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Field / Disorder</th>
+                            <th>Severity %</th>
+                            <th>Category</th>
+                            <th>Confidence</th>
+                            <th>Transcript</th>
+                        </tr>
+                    </thead>
+                    <tbody id="progressChecksTableBody">
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No speech checks recorded yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Recent Practice Attempts Table -->
+        <section class="card-container" style="margin-top:24px;">
+            <div class="card-header-row">
+                <div class="card-icon-bubble">🏋️</div>
+                <div>
+                    <h2 class="card-title-text">Recent Vocal Practice Logs</h2>
+                    <p class="card-desc-text">Fuzzy matching pronunciation accuracy across daily exercises</p>
+                </div>
+            </div>
+
+            <div class="table-scroll-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Difficulty</th>
+                            <th>Target Phrase</th>
+                            <th>Spoken Words</th>
+                            <th>Match Score</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody id="progressPracticeTableBody">
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No practice sessions completed yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================
+         VIEW 7: SLP CLINICIAN PORTAL & PATIENT CASELOAD DASHBOARD
+         ================================================================ -->
+    <div id="viewSlpDashboard" class="app-view">
+        <header class="header-section">
+            <div class="tag-pill" style="border-color:rgba(168, 85, 247, 0.4); color:#C084FC; background:rgba(168, 85, 247, 0.1);">
+                🩺 Certified Clinician Portal
+            </div>
+            <h1 class="main-title">Speech-Language Pathologist <span class="main-title-accent" style="background: linear-gradient(135deg, #E9D5FF 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Clinical Dashboard</span></h1>
+            <p class="subtitle">
+                Comprehensive patient caseload management: review tele-therapy bookings, audit acoustic diagnostic evaluations, inspect daily vocal practice progress, and prescribe tailored speech drills.
+            </p>
+        </header>
+
+        <!-- Clinician KPI Row -->
+        <div class="kpi-row-4">
+            <div class="kpi-metric-tile under-purple">
+                <div class="kpi-metric-icon">👥</div>
+                <div class="kpi-metric-name">ACTIVE PATIENTS</div>
+                <div class="kpi-metric-num" id="slpStatPatients">0</div>
+            </div>
+            <div class="kpi-metric-tile under-blue">
+                <div class="kpi-metric-icon">📅</div>
+                <div class="kpi-metric-name">TELE-THERAPY SESSIONS</div>
+                <div class="kpi-metric-num" id="slpStatBookings">0</div>
+            </div>
+            <div class="kpi-metric-tile under-yellow">
+                <div class="kpi-metric-icon">🔬</div>
+                <div class="kpi-metric-name">ACOUSTIC CHECKS LOGGED</div>
+                <div class="kpi-metric-num" id="slpStatChecks">0</div>
+            </div>
+            <div class="kpi-metric-tile under-green">
+                <div class="kpi-metric-icon">🎯</div>
+                <div class="kpi-metric-name">MEAN CLARITY SCORE</div>
+                <div class="kpi-metric-num" id="slpStatClarity">--</div>
+            </div>
+        </div>
+
+        <!-- Section 1: Scheduled Tele-Therapy Consultations & Bookings -->
+        <section class="card-container" style="margin-top:24px;">
+            <div class="card-header-row">
+                <div class="card-icon-bubble" style="background:rgba(6, 182, 212, 0.15); border-color:#06B6D4;">📅</div>
+                <div style="flex:1;">
+                    <h2 class="card-title-text">Patient Tele-Therapy Consultations & Appointments</h2>
+                    <p class="card-desc-text">Scheduled 1-on-1 video reviews, diagnostic intake sessions, and patient symptom logs</p>
+                </div>
+                <button type="button" class="btn-sample-action" onclick="loadSlpDashboardData()" title="Refresh Appointments">
+                    🔄 Refresh Schedule
+                </button>
+            </div>
+
+            <div class="table-scroll-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Session Format</th>
+                            <th>Date & Time</th>
+                            <th>Patient Reported Symptoms</th>
+                            <th>Status</th>
+                            <th>Clinical Findings</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slpConsultationsTableBody">
+                        <tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Loading patient consultations...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 2: Registered Patient Caseload Directory -->
+        <section class="card-container" style="margin-top:24px;">
+            <div class="card-header-row">
+                <div class="card-icon-bubble" style="background:rgba(168, 85, 247, 0.15); border-color:#A855F7;">👥</div>
+                <div style="flex:1;">
+                    <h2 class="card-title-text">Registered Patient Caseload</h2>
+                    <p class="card-desc-text">Patient speech disorders, communication goals, and direct rehabilitation actions</p>
+                </div>
+                <button type="button" class="btn-sample-action" onclick="openPrescribeModal()" title="Prescribe custom speech drill">
+                    ➕ Prescribe Vocal Drill
+                </button>
+            </div>
+
+            <div class="patients-grid" id="slpPatientsGrid">
+                <!-- Dynamically populated via JS -->
+                <div style="color:var(--text-muted); font-size:13px;">Loading patient caseload...</div>
+            </div>
+        </section>
+
+        <!-- Section 3: Patient Acoustic Speech Checks (Lab Records) -->
+        <section class="card-container" style="margin-top:24px;">
+            <div class="card-header-row">
+                <div class="card-icon-bubble">🔬</div>
+                <div>
+                    <h2 class="card-title-text">Patient Speech Diagnostic Lab Records</h2>
+                    <p class="card-desc-text">SVM, Random Forest & MLP acoustic classification results across patient samples</p>
+                </div>
+            </div>
+
+            <div class="table-scroll-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Disorder Detected</th>
+                            <th>Severity %</th>
+                            <th>Category</th>
+                            <th>Confidence</th>
+                            <th>Spoken Words / Transcript</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slpChecksTableBody">
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading speech checks...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 4: Patient Vocal Practice Logs -->
+        <section class="card-container" style="margin-top:24px;">
+            <div class="card-header-row">
+                <div class="card-icon-bubble" style="background:rgba(16, 185, 129, 0.15); border-color:#10B981;">🏋️</div>
+                <div>
+                    <h2 class="card-title-text">Patient Vocal Practice Logs & Fuzzy Match Scoring</h2>
+                    <p class="card-desc-text">Real-time tracking of patient pronunciation drills and phoneme clarity</p>
+                </div>
+            </div>
+
+            <div class="table-scroll-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Exercise Tier</th>
+                            <th>Target Phrase</th>
+                            <th>Patient Spoken Audio</th>
+                            <th>Match Score</th>
+                            <th>Feedback Log</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slpPracticeTableBody">
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading practice history...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+</main>
+
+<!-- ====================================================================
+     MODAL: BOOK A THERAPIST CONSULTATION
+     ==================================================================== -->
+<div class="booking-modal-backdrop" id="bookingModalBackdrop" style="display:none;" onclick="closeBookingModal(event)">
+    <div class="booking-modal-card" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="font-size:18px; font-weight:800; color:#FFFFFF;">Book 1-on-1 Tele-Therapy</div>
+            <button class="drawer-close-btn" onclick="closeBookingModal()">&times;</button>
+        </div>
+
+        <form onsubmit="handleBookingSubmit(event)">
+            <div class="auth-field-group">
+                <label>Selected Speech-Language Pathologist</label>
+                <input type="text" id="bookTherapistName" class="auth-input" readonly style="background:#1E232E;">
+            </div>
+            <div class="auth-field-group">
+                <label>Your Name</label>
+                <input type="text" id="bookPatientName" class="auth-input" required placeholder="Patient Name">
+            </div>
+            <div class="auth-field-group">
+                <label>Session Format</label>
+                <select id="bookSessionType" class="auth-input">
+                    <option value="1-on-1 Video Tele-Therapy (45 mins)">1-on-1 Video Tele-Therapy (45 mins)</option>
+                    <option value="Acoustic Voice Note Review (Asynchronous)">Acoustic Voice Note Review (Asynchronous)</option>
+                    <option value="Clinical Diagnostic Intake Assessment">Clinical Diagnostic Intake Assessment</option>
+                </select>
+            </div>
+            <div class="auth-grid-2">
+                <div class="auth-field-group">
+                    <label>Preferred Date</label>
+                    <input type="date" id="bookDate" class="auth-input" required>
+                </div>
+                <div class="auth-field-group">
+                    <label>Preferred Time</label>
+                    <select id="bookTime" class="auth-input">
+                        <option value="10:00 AM">10:00 AM</option>
+                        <option value="11:30 AM">11:30 AM</option>
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="4:30 PM">4:30 PM</option>
+                    </select>
+                </div>
+            </div>
+            <div class="auth-field-group">
+                <label>Notes for the Therapist</label>
+                <textarea id="bookNotes" rows="3" class="auth-input" placeholder="Mention symptoms (e.g., slurring on phone, stuttering on plosive consonants /p/, /t/)..."></textarea>
+            </div>
+            <button type="submit" class="auth-btn-primary" style="margin-top:16px;">Confirm Appointment Booking</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Add New Saved Contact -->
+<div class="booking-modal-backdrop" id="addContactModal" style="display:none;" onclick="closeAddContactModal(event)">
+    <div class="booking-modal-card" style="width:460px; max-width:96vw;" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="font-size:18px; font-weight:800; color:#FFFFFF;">➕ Add New WhatsApp Contact</div>
+            <button class="drawer-close-btn" onclick="closeAddContactModal()">&times;</button>
+        </div>
+        <form onsubmit="handleSaveNewContact(event)">
+            <div class="auth-field-group">
+                <label>Contact Name</label>
+                <input type="text" id="newContactName" placeholder="e.g. Priya (Sister) or Dr. Roy" required class="auth-input">
+            </div>
+            <div class="auth-field-group">
+                <label>WhatsApp Mobile Number</label>
+                <div style="display:flex; gap:8px;">
+                    <select id="newContactCountryCode" class="auth-input" style="width:145px; flex:none;">
+                        <option value="+91" selected>🇮🇳 +91 (India)</option>
+                        <option value="+1">🇺🇸 +1 (US/CA)</option>
+                        <option value="+44">🇬🇧 +44 (UK)</option>
+                        <option value="+61">🇦🇺 +61 (Australia)</option>
+                        <option value="+971">🇦🇪 +971 (UAE)</option>
+                        <option value="+65">🇸🇬 +65 (Singapore)</option>
+                        <option value="+49">🇩🇪 +49 (Germany)</option>
+                        <option value="+33">🇫🇷 +33 (France)</option>
+                        <option value="">Custom</option>
+                    </select>
+                    <input type="tel" id="newContactPhone" placeholder="Mobile Number (e.g. 6238629917)" required class="auth-input" style="flex:1;">
+                </div>
+            </div>
+            <div class="auth-field-group">
+                <label>Relationship / Notes</label>
+                <input type="text" id="newContactNotes" placeholder="e.g. Family, Speech Pathologist, Friend" class="auth-input">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-cancel" onclick="closeAddContactModal()" style="background:var(--card-inner); border:1px solid var(--border-color); color:#fff; padding:10px 18px; border-radius:8px; cursor:pointer;">Cancel</button>
+                <button type="submit" class="auth-btn-primary" style="margin-top:0; width:auto; padding:10px 24px;">Save Contact</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: SLP Update Consultation Status & Clinical Notes -->
+<div class="booking-modal-backdrop" id="consultationStatusModal" style="display:none;" onclick="closeConsultationStatusModal(event)">
+    <div class="booking-modal-card" style="width:500px; max-width:96vw;" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="font-size:18px; font-weight:800; color:#FFFFFF;">✏️ Update Consultation & Clinical Findings</div>
+            <button class="drawer-close-btn" onclick="closeConsultationStatusModal()">&times;</button>
+        </div>
+        <form onsubmit="handleSaveConsultationStatus(event)">
+            <input type="hidden" id="statusModalConsultationId">
+            <div class="auth-field-group">
+                <label>Patient Name & Session</label>
+                <input type="text" id="statusModalPatientName" readonly class="auth-input" style="background:#1E232E;">
+            </div>
+            <div class="auth-field-group">
+                <label>Appointment Status</label>
+                <select id="statusModalSelect" class="auth-input">
+                    <option value="Confirmed">Confirmed (Scheduled)</option>
+                    <option value="In Progress">In Progress (Active Session)</option>
+                    <option value="Completed">Completed (Reviewed & Treated)</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="auth-field-group">
+                <label>SLP Clinical Findings & Progress Notes</label>
+                <textarea id="statusModalNotes" rows="4" class="auth-input" placeholder="Enter clinical assessment, phonetic accuracy, palatal closure notes, or home drill recommendations..."></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-cancel" onclick="closeConsultationStatusModal()" style="background:var(--card-inner); border:1px solid var(--border-color); color:#fff; padding:10px 18px; border-radius:8px; cursor:pointer;">Cancel</button>
+                <button type="submit" class="auth-btn-primary" style="margin-top:0; width:auto; padding:10px 20px; background:#A855F7; color:#FFF;">
+                    Save Clinical Record
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: SLP Prescribe Vocal Drill -->
+<div class="booking-modal-backdrop" id="prescribeModal" style="display:none;" onclick="closePrescribeModal(event)">
+    <div class="booking-modal-card" style="width:500px; max-width:96vw;" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="font-size:18px; font-weight:800; color:#FFFFFF;">➕ Prescribe Vocal Rehabilitation Drill</div>
+            <button class="drawer-close-btn" onclick="closePrescribeModal()">&times;</button>
+        </div>
+        <form onsubmit="handleSavePrescribedDrill(event)">
+            <div class="auth-field-group">
+                <label>Assign to Patient</label>
+                <select id="prescribePatientSelect" class="auth-input" required>
+                    <!-- Populated dynamically with patient names -->
+                </select>
+            </div>
+            <div class="auth-field-group">
+                <label>Exercise Difficulty Tier</label>
+                <select id="prescribeDifficulty" class="auth-input">
+                    <option value="Easy">Easy (Single Syllable & Gentle Vowel Onsets)</option>
+                    <option value="Medium">Medium (Phrasal Rhythm & Consonant Pacing)</option>
+                    <option value="Hard">Hard (Complex Motor Coordination & Articulatory Agility)</option>
+                </select>
+            </div>
+            <div class="auth-field-group">
+                <label>Target Vocal Phrase to Practice</label>
+                <input type="text" id="prescribePhrase" placeholder="e.g. Take a deep diaphragmatic breath and prolong the /m/ sound" required class="auth-input">
+            </div>
+            <div class="auth-field-group">
+                <label>Special Instructions for Patient</label>
+                <textarea id="prescribeInstructions" rows="3" class="auth-input" placeholder="e.g. Practice 3 times daily before meals. Emphasize soft vocal contact..."></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-cancel" onclick="closePrescribeModal()" style="background:var(--card-inner); border:1px solid var(--border-color); color:#fff; padding:10px 18px; border-radius:8px; cursor:pointer;">Cancel</button>
+                <button type="submit" class="auth-btn-primary" style="margin-top:0; width:auto; padding:10px 20px; background:#10B981; color:#000;">
+                    Assign Drill to Patient
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Interactive Live Tele-Therapy Video Consultation -->
+<div class="booking-modal-backdrop" id="teleTherapyModal" style="display:none;" onclick="closeTeleTherapyModal(event)">
+    <div class="booking-modal-card" style="width:780px; max-width:96vw;" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:20px;">🎥</span>
+                <div>
+                    <div style="font-size:16px; font-weight:800; color:#FFFFFF;" id="telePatientTitle">Tele-Therapy Video Session</div>
+                    <div style="font-size:11px; color:#10B981;">● End-to-End Encrypted HIPAA Compliant Video Stream</div>
+                </div>
+            </div>
+            <button class="drawer-close-btn" onclick="closeTeleTherapyModal()">&times;</button>
+        </div>
+
+        <div class="teletherapy-video-box">
+            <!-- Patient Video Stream View -->
+            <div class="video-screen-patient">
+                <div style="font-size:56px; margin-bottom:8px;">👤</div>
+                <div style="font-weight:700; color:#FFFFFF; font-size:14px;" id="telePatientLiveName">Patient Video Stream</div>
+                <div style="font-size:11px; color:#10B981; margin-top:4px;">Microphone & Camera Connected (48 kHz)</div>
+                <!-- Mini Waveform Canvas Simulation -->
+                <div style="margin-top:14px; width:80%; height:26px; background:#0B0E14; border-radius:6px; display:flex; align-items:center; justify-content:center; gap:4px; padding:0 8px;">
+                    <div style="width:4px; height:12px; background:#10B981; border-radius:2px;"></div>
+                    <div style="width:4px; height:20px; background:#10B981; border-radius:2px;"></div>
+                    <div style="width:4px; height:8px; background:#10B981; border-radius:2px;"></div>
+                    <div style="width:4px; height:16px; background:#10B981; border-radius:2px;"></div>
+                    <div style="width:4px; height:22px; background:#10B981; border-radius:2px;"></div>
+                    <div style="width:4px; height:10px; background:#10B981; border-radius:2px;"></div>
+                    <div style="width:4px; height:14px; background:#10B981; border-radius:2px;"></div>
+                </div>
+
+                <!-- Picture-in-picture therapist screen -->
+                <div class="video-screen-therapist">
+                    <span style="font-size:18px;">🩺</span>
+                    <span style="font-size:10px; font-weight:700; color:#06B6D4;">You (SLP)</span>
+                </div>
+            </div>
+
+            <!-- In-Session Live Clinical Notes -->
+            <div class="teletherapy-notes-panel">
+                <div style="font-size:12px; font-weight:800; color:var(--gold); text-transform:uppercase; margin-bottom:6px;">
+                    📝 Real-time SLP Observations:
+                </div>
+                <textarea id="teleLiveNotes" placeholder="Type clinical observations as patient speaks (e.g. Rate of speech: slow; breath support: adequate; slight tongue protrusion on bilabial /p/)..."></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <button type="button" class="btn-sample-action" style="background:#06B6D4; color:#000; font-weight:800; border:none;" onclick="saveTeleTherapyNotes()">
+                        💾 Save Notes
+                    </button>
+                    <span style="font-size:11px; color:#10B981;" id="teleSaveFeedback"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Call Controls -->
+        <div style="display:flex; justify-content:center; gap:12px; padding-top:10px; border-top:1px solid var(--border-color);">
+            <button type="button" class="btn-sample-action" onclick="alert('Microphone muted/unmuted for tele-therapy session.')">
+                🎙️ Toggle Mic
+            </button>
+            <button type="button" class="btn-sample-action" onclick="alert('Camera video toggled.')">
+                📹 Toggle Camera
+            </button>
+            <button type="button" class="btn-sample-action" style="background:rgba(239, 68, 68, 0.2); border-color:#EF4444; color:#EF4444;" onclick="closeTeleTherapyModal()">
+                🔴 End Tele-Therapy Call
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/app.js?v=2.4"></script>
+</body>
+</html>
+

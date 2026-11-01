@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+secrets.json
+credentials.json
+
+# Databases and user data
+*.db
+*.sqlite
+*.sqlite3
+database/speech_app.db
+database/speech_app_backup.db
+
+# Datasets and speech recordings
+torgo_data/
+datasets/
+data/
+*.wav
+*.mp3
+*.flac
+
+# Training outputs and temporary files
+*.log
+*.tmp
+.ipynb_checkpoints/
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Speech dataset and training data
+torgo_data/
+training/
+
+# Local training and experiment data
+features.csv
+features_backup.csv
+model_results.json
+practice_stats.json
